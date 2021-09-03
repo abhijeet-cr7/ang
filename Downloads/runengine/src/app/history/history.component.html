@@ -1,0 +1,63 @@
+<div class="container-fluid">
+    <header class="borderforheader">
+      <div class="row paddingForHeader">
+        <div class="col-sm-1">
+  
+        </div>
+        <div class="col-sm-2">
+          <img src="assets/CS.png" alt="C&S" class="logo">
+        </div>
+        <div class="col-sm-6 text-center"><h3 class="marginForHeading">OMS Allocation Simmulation</h3></div>
+        <div class="col-sm-2"></div>
+        <div class="col-sm-1 text-center"><button type="button" class="btn btn-default" (click) = "viewHome()">Home</button></div>
+  
+      </div>
+    </header>
+    </div>
+    <br />
+    <div class="containerForDiv">
+    <div class="row">
+        <div class="col-sm-4">
+            <mat-form-field appearance="fill">
+                <mat-label>From Date</mat-label>
+                <input matInput [matDatepicker]="fromDate" disabled>
+                <mat-datepicker-toggle matSuffix [for]="fromDate"></mat-datepicker-toggle>
+                <mat-datepicker #fromDate disabled="false"></mat-datepicker>
+              </mat-form-field>
+        </div>
+        <div class="col-sm-4">
+            <mat-form-field appearance="fill">
+                <mat-label>To Date</mat-label>
+                <input matInput [matDatepicker]="toDate" disabled>
+                <mat-datepicker-toggle matSuffix [for]="toDate"></mat-datepicker-toggle>
+                <mat-datepicker #toDate disabled="false"></mat-datepicker>
+              </mat-form-field>
+        </div>
+      <div class="col-sm-4 marginTop">
+          <button class="btn btn-outline-danger" type="button">Search</button>
+      </div>
+       
+    </div>
+<div class="row">
+    <table class="table">
+        <thead>
+          <tr>
+            <th>S.NO</th>
+            <th>Engine</th>
+            <th>Request</th>
+            <th>Status</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+</table>
+</div>
+</div>

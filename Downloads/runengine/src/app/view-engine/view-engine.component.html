@@ -1,0 +1,227 @@
+<div class="container-fluid">
+  <header class="borderforheader">
+    <div class="row paddingForHeader">
+      <div class="col-sm-1"></div>
+      <div class="col-sm-2">
+        <img src="assets/CS.png" alt="C&S" class="logo" />
+      </div>
+      <div class="col-sm-6 text-center">
+        <h3 class="marginForHeading">OMS Allocation Simmulation</h3>
+      </div>
+      <div class="col-sm-2"></div>
+      <div class="col-sm-1 text-center">
+        <button type="button" class="btn btn-default" (click)="viewHistory()">
+          History
+        </button>
+      </div>
+    </div>
+  </header>
+</div>
+<mat-horizontal-stepper
+  labelPosition="bottom"
+  appStepperPosition="bottom"
+  #stepper
+  (selectionChange)="selectionChange($event)"
+>
+  <mat-step label="Setup" state="home" [editable]="editable">
+    <div>
+      <!-- <button mat-button matStepperNext>Continue</button> -->
+      <div class="row engineTestHeader">
+        <div class="col-sm-4 text-center">
+          <button
+            type="button"
+            (click)="additem('POPM')"
+            class="btn btn-success"
+          >
+            Popm
+          </button>
+        </div>
+        <div class="col-sm-4 text-center">
+          <button
+            type="button"
+            (click)="additem('WMS_Release')"
+            class="btn btn-success"
+          >
+            WMS_Release
+          </button>
+        </div>
+        <div class="col-sm-4 text-center">
+          <button
+            type="button"
+            (click)="additem('Full Refresh')"
+            class="btn btn-success"
+          >
+            Full Refresh
+          </button>
+        </div>
+      </div>
+      <div
+        class="text-center"
+        *ngIf="listArr.length === 0"
+        style="margin-top: 5%"
+      >
+        <div class="row">
+          <div class="col-sm-6 offset-sm-3">
+            <h1>&nbsp; &nbsp; &nbsp;Add Items</h1>
+          </div>
+        </div>
+      </div>
+      <div cdkDropListGroup *ngIf="listArr.length > 0" style="margin-top: 5%">
+        <div class="example-container">
+          <div
+            cdkDropList
+            [cdkDropListData]="listArr"
+            class="example-list"
+            (cdkDropListDropped)="drop($event)"
+          >
+            <div
+              class="example-box draggable"
+              *ngFor="let item of listArr; let i = index"
+              cdkDrag
+            >
+              <div class="col-sm-1">
+                <b>{{ i + 1 }}</b>
+              </div>
+              <div class="col-sm-2">
+                <a class="colorForEngine">{{ item.text }}</a>
+              </div>
+              <div class="col-sm-2">
+                <!-- <input
+                  type="text"
+                  class="ml-2"
+                  [value]="i + 1"
+                  (click)="showVal(item.text)"
+                  
+                /> -->
+                <label for="priority" class="mr-2">PRIORITY</label>
+                <select
+                  name="priority"
+                  id="prior"
+                  (input)="selectChangeHandler($event.target.value, item.text)"
+                >
+                  <option *ngFor="let item of listArr" value="{{ item.count }}">
+                    {{ item.count }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-sm-4">
+                <!-- <h5>Request</h5> -->
+                <textarea
+                  cols="40"
+                  rows="4"
+                  *ngIf="item.text != 'Full Refresh'"
+                  (change)="getData($event.target.value, i)"
+                ></textarea>
+                <textarea
+                  cols="40"
+                  rows="4"
+                  *ngIf="item.text === 'Full Refresh'"
+                  >{{ item.array }} {{ getData(item.array, i) }}</textarea
+                >
+              </div>
+              <div class="col-sm-1">
+                <input
+                  type="image"
+                  src="assets/copy.png"
+                  height="30px"
+                  alt="Copy"
+                  (click)="copyToClipboard(item.array)"
+                  ngxClipboard
+                  [cdkCopyToClipboard]="item.array"
+                  mat-raised-button
+                  matTooltip="{{ item.array }}"
+                  matTooltipClass="example-tooltip-red"
+                  aria-label="Button that shows a red tooltip"
+                />
+                <!-- <img/> -->
+              </div>
+              <div class="col-sm-2">
+                <button
+                  type="button"
+                  class="btn btn-primary customClass"
+                  (click)="removeItem(i)"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-step>
+
+  <mat-step label="Validate & Submit" state="form" class="fontSize">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>SNO</th>
+          <th scope="col">Engine</th>
+          <th>Request</th>
+          <th>Status</th>
+          <th>Message</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of listArr; let i = index">
+          <td>{{ count }}</td>
+          <td scope="row">{{ item.text }}</td>
+          <td style="width: 10%">{{ item.data }}</td>
+          <td *ngIf="item.status">
+            <span *ngIf="item.status === 'success'"
+              ><img src="assets/tick.png" height="30px" alt="Filed"
+            /></span>
+            <span *ngIf="item.status === 'fail'"
+              ><img src="assets/cross.png" height="30px" alt="Filed"
+            /></span>
+          </td>
+          <td *ngIf="item.message">
+            <span>{{ item.message }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="row">
+      <div class="col-sm-6 pull-left">
+        <button
+          class="btn btn-warning"
+          type="button"
+          (click)="vadlidate()"
+          [disabled]="disableValidate"
+        >
+          Validate
+        </button>
+      </div>
+      <div class="col-sm-6 pull-right">
+        <button
+          class="btn btn-success"
+          type="button"
+          [disabled]="disableSubmit"
+          (click)="submitBtn()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </mat-step>
+
+  <mat-step label="View (Result)" state="last">
+    You are now done.
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button>Reset</button>
+    </div>
+  </mat-step>
+  <ng-template matStepperIcon="edit">
+    <mat-icon>bubble_chart</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="home">
+    <mat-icon>home</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="form">
+    <mat-icon>format_align_center</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="last">
+    <mat-icon>done_all</mat-icon>
+  </ng-template>
+</mat-horizontal-stepper>

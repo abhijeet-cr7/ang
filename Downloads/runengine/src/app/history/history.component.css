@@ -1,0 +1,45 @@
+.logo{
+    width: auto;
+    max-height: 36px;
+    display: block;
+    margin: 0 auto;
+  }
+  .borderforheader {
+    border-bottom: 6px solid #F33F3F;
+}
+.paddingForHeader {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.marginForHeading {
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+  button{
+    height:44px;
+    width: 120px;
+    border : 1px solid
+  }
+  .row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.container-fluid{
+    padding-right: 0px;
+    padding-left: 0px;
+    margin-right: auto;
+    margin-left: auto;
+}
+.col-sm-1{
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+  .containerForDiv {
+      width: 84%;
+      margin-left: 7%;
+      font-size: 1.7rem;
+  }
+  .marginTop {
+      margin-top: 8px;
+  }
