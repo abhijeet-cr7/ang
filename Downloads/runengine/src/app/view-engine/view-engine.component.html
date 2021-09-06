@@ -17,6 +17,14 @@
     </div>
   </header>
 </div>
+<div class="row mt-2">
+  <div class="col-sm-6">
+    <button (click)="goBack(stepper)"><b>PREVIOUS</b></button>
+  </div>
+  <div class="col-sm-6 d-flex flex-row-reverse">
+    <button (click)="goForward(stepper)"><b>NEXT</b></button>
+  </div>
+</div>
 <mat-horizontal-stepper
   labelPosition="bottom"
   appStepperPosition="bottom"
@@ -99,6 +107,7 @@
                   id="prior"
                   (input)="selectChangeHandler($event.target.value, item.text)"
                 >
+                  <option disabled selected>SELECT PRIORITY</option>
                   <option *ngFor="let item of listArr" value="{{ item.count }}">
                     {{ item.count }}
                   </option>
@@ -140,6 +149,7 @@
                   type="button"
                   class="btn btn-primary customClass"
                   (click)="removeItem(i)"
+                  [disabled]="disableRemove"
                 >
                   Remove
                 </button>
@@ -157,6 +167,7 @@
         <tr>
           <th>SNO</th>
           <th scope="col">Engine</th>
+          <th>Priority</th>
           <th>Request</th>
           <th>Status</th>
           <th>Message</th>
@@ -164,8 +175,9 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of listArr; let i = index">
-          <td>{{ count }}</td>
+          <td>{{ i + 1 }}</td>
           <td scope="row">{{ item.text }}</td>
+          <td>{{ item.priority }}</td>
           <td style="width: 10%">{{ item.data }}</td>
           <td *ngIf="item.status">
             <span *ngIf="item.status === 'success'"

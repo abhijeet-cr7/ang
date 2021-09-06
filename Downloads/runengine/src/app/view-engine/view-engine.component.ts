@@ -11,6 +11,7 @@
 //   }
 
 // }
+import { MatStepper } from '@angular/material/stepper';
 import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import {
   CdkDragDrop,
@@ -47,6 +48,7 @@ export class ViewEngineComponent implements OnInit {
     this.element = elementRef.nativeElement;
   }
   @Input('appStepperPosition') position: 'top' | 'bottom';
+  currObj: number = 0;
   element: any;
   disableValidate: boolean;
   disableSubmit: boolean;
@@ -62,12 +64,13 @@ export class ViewEngineComponent implements OnInit {
   success: any;
   error: any;
   body: string;
-  arr = [];
   count = 1;
   priority: any = [];
+  apiArray: any = [];
   regex1 = /popm/i;
   regex2 = /wms_release/i;
   regex3 = /full refresh/i;
+  disableRemove: boolean = false;
   ngOnInit = () => {};
   AfterViewInit(): void {
     if (this.position === 'bottom') {
@@ -120,6 +123,7 @@ export class ViewEngineComponent implements OnInit {
         count: this.count,
       });
       this.count++;
+      this.currObj++;
     }
   };
   removeItem = (index: number) => {
@@ -300,85 +304,160 @@ export class ViewEngineComponent implements OnInit {
   viewHistory = () => {
     this.router.navigate(['/viewHistory']);
   };
+  goBack(stepper: MatStepper) {
+    stepper.previous();
+  }
+  goForward(stepper: MatStepper) {
+    stepper.next();
+  }
   selectChangeHandler = ($event, name) => {
+    // debugger;
     event.preventDefault();
     this.priority.push({ name: name, priority: $event });
+    console.log(this.currObj);
+    // console.log(this.count - 2);
+    // if (this.listArr[this.count] !== undefined) {
+    let Obj = this.listArr[this.currObj - 1];
+    Obj['priority'] = $event;
+    // }
   };
   submitBtn = () => {
+    console.log(this.listArr);
+    this.disableRemove = true;
     console.log(this.priority);
     let length = this.priority.length;
     let parentArr = [];
-    for (var i = 0; i < length; i++) {
+    // for (let i = 1; i <= 3; i++) {
+    //   this.apiArray.push([]);
+    // }
+    for (let i = 0; i < length; i++) {
       parentArr.push([]);
     }
-    for (var j = 1; j <= length; j++) {
-      for (var i = 0; i < length; i++) {
+    for (let j = 1; j <= length; j++) {
+      for (let i = 0; i < length; i++) {
         if (this.priority[i].priority == j) {
           parentArr[j - 1].push(this.priority[i].name);
         }
       }
     }
-    console.log(parentArr);
-    for (var i = 0; i < length; i++) {
+    console.log('****parentArr', parentArr);
+    for (let i = 0; i < length; i++) {
       parentArr[i].map((item) => {
-        if (this.regex1.test(item) && this.regex2.test(item)) {
-          forkJoin([
-            this.http
-              .post('url', {})
-              .toPromise()
-              .then((data: any) => {
-                console.log(data);
-              }),
-          ]);
-        } else if (this.regex2.test(item) && this.regex3.test(item)) {
-        } else if (this.regex1.test(item) && this.regex3.test(item)) {
-        } else if (
-          this.regex1.test(item) &&
-          this.regex2.test(item) &&
-          this.regex3.test(item)
-        ) {
-        } else if (this.regex1.test(item)) {
-        } else if (this.regex2.test(item)) {
-        } else if (this.regex3.test(item)) {
+        if (this.regex1.test(item)) {
+          console.log(this.regex1.test(item));
+          for (var j = 0; j < parentArr[i].length; j++) {
+            console.log(parentArr[i][j]);
+            if (this.regex2.test(parentArr[i][j])) {
+              for (var k = 0; k < parentArr[i].length; k++) {
+                if (this.regex3.test(parentArr[i][k])) {
+                  console.log('hi');
+                  forkJoin([
+                    this.http.get(
+                      'https://jsonplaceholder.typicode.com/todos'
+                      // {
+                      //   EVENT_ID: '1178',
+                      //   EVENT_UUID: 'b9c64f16-80d0-4dd5-ad55-0b2605bcf3f3',
+                      //   EVENT_GEN_TS: '6/9/2021_13:9',
+                      //   EVENT_PRIORITY: '1',
+                      //   EVENT_TYPE: 'FULL_REFRESH',
+                      //   DIVISION_ID: '1',
+                      // }
+                    ),
+                    this.http.get('https://jsonplaceholder.typicode.com/users'),
+                    this.http.get(
+                      'https://jsonplaceholder.typicode.com/comments'
+                    ),
+                  ]).subscribe((data) => {
+                    this.apiArray[0] = data[0];
+                    this.apiArray[1] = data[1];
+                    this.apiArray[2] = data[2];
+                    console.log('****apiArray', this.apiArray);
+                  });
+                }
+              }
+            }
+          }
+        }
+      });
+      parentArr[i].map((item) => {
+        if (this.regex1.test(item)) {
+          for (let j = 0; j < parentArr[i].length; j++) {
+            if (this.regex2.test(parentArr[i][j])) {
+              forkJoin([
+                this.http.get('https://jsonplaceholder.typicode.com/todos'),
+                this.http.get('https://jsonplaceholder.typicode.com/users'),
+              ]).subscribe((data) => {
+                this.apiArray[0] = data[0];
+                this.apiArray[1] = data[1];
+                console.log(this.apiArray);
+              });
+            }
+          }
+        }
+      });
+      parentArr[i].map((item) => {
+        if (this.regex2.test(item)) {
+          for (let j = 0; j < parentArr[i].length; j++) {
+            if (this.regex3.test(parentArr[i][j])) {
+              forkJoin([
+                this.http.get('https://jsonplaceholder.typicode.com/users'),
+                this.http.get('https://jsonplaceholder.typicode.com/comments'),
+              ]).subscribe((data) => {
+                this.apiArray[0] = data[0];
+                this.apiArray[1] = data[1];
+                console.log(this.apiArray);
+              });
+            }
+          }
+        }
+      });
+      parentArr[i].map((item) => {
+        if (this.regex1.test(item)) {
+          for (let j = 0; j < parentArr[i].length; j++) {
+            if (this.regex3.test(parentArr[i][j])) {
+              forkJoin([
+                this.http.get('https://jsonplaceholder.typicode.com/todos'),
+                this.http.get('https://jsonplaceholder.typicode.com/comments'),
+              ]).subscribe((data) => {
+                this.apiArray[0] = data[0];
+                this.apiArray[1] = data[1];
+                console.log(this.apiArray);
+              });
+            }
+          }
+        }
+      });
+      parentArr[i].map((item) => {
+        if (this.regex1.test(item)) {
+          this.http
+            .get('https://jsonplaceholder.typicode.com/todos')
+            .subscribe((data) => {
+              this.apiArray[0] = data;
+              console.log(this.apiArray);
+            });
+        }
+      });
+      parentArr[i].map((item) => {
+        if (this.regex2.test(item)) {
+          this.http
+            .get('https://jsonplaceholder.typicode.com/users')
+            .subscribe((data) => {
+              this.apiArray[1] = data;
+              console.log(this.apiArray);
+            });
+        }
+      });
+      parentArr[i].map((item) => {
+        if (this.regex3.test(item)) {
+          this.http
+            .get('https://jsonplaceholder.typicode.com/comments')
+            .subscribe((data) => {
+              this.apiArray[2] = data;
+              console.log(this.apiArray);
+            });
         }
       });
     }
-    // if(this.priority.length==0) {
-
-    // }
-    // this.priority.map((item) => {
-    //   if (item.priority == 1) {
-    //     this.p1.push(item.name);
-    //   } else if (item.priority == 2) {
-    //     this.p2.push(item.name);
-    //   } else if (item.priority == 3) {
-    //     this.p3.push(item.name);
-    //   } else if (item.priority == 4) {
-    //     this.p4.push(item.name);
-    //   }
-    // });
-    // console.log('p1-', this.p1, 'p2-', this.p2, 'p3-', this.p3, 'p4-', this.p4);
-    // for (var i = 0; i < this.p1.length; i++) {
-    //   if (regex1.test(this.p1[i]) && regex2.test(this.p1[i])) {
-    //     // call popm and wms release api at a time using fork.
-    //   } else if (regex1.test(this.p1[i]) && regex3.test(this.p1[i])) {
-    //     // call popm and full refresh api at a time using fork.
-    //   } else if (regex3.test(this.p1[i]) && regex2.test(this.p1[i])) {
-    //     //  call full refresh and wms release at a time using fork.
-    //   } else if (
-    //     regex1.test(this.p1[i]) &&
-    //     regex2.test(this.p1[i]) &&
-    //     regex3.test(this.p1[i])
-    //   ) {
-    //     // call all 3 api's at a time
-    //   } else if (regex1.test(this.p1[i])) {
-    //     // call popm
-    //   } else if (regex2.test(this.p1[i])) {
-    //     // call wms
-    //   } else if (regex3.test(this.p1[i])) {
-    //     // call full refresh
-    //   }
-    // }
   };
 }
 
